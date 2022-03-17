@@ -13,7 +13,7 @@ exports.getAllActors = async (req, res) => {
         .status(404)
         .json({ status: 'error', message: 'Not found Id in the database' });
     }
-    res.status(200).json({ status: 'success', data: { todos: actorDb } });
+    res.status(200).json({ status: 'success', data: { actors: actorDb } });
   } catch (error) {
     console.log(error);
   }
@@ -51,7 +51,7 @@ exports.updateActor = async (req, res) => {
         .json({ status: 'error', message: 'Cant update actor, Invalid ID' });
       return;
     }
-    await Todo.update({ ...data });
+    await Actor.update({ ...data });
     res.status(204).json({ status: 'success' });
   } catch (error) {
     console.log(error);
