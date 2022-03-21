@@ -4,7 +4,8 @@
   "description": "server api whit sequelize and express",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node server.js",
+    "start:dev": "nodemon server.js"
   },
   "author": "JimmyP",
   "license": "ISC",

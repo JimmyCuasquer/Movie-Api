@@ -1,16 +1,16 @@
 const { DataTypes } = require('sequelize');
 
-const { sequelize } = require('../util/database');
+const { sequelize } = require('../utils/database');
 
-const MovieReviews = sequelize.define('reviews', {
+const Review = sequelize.define('review', {
   id: {
     primaryKey: true,
-    type: DataTypes.INTEGER,
     autoIncrement: true,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   title: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   comment: {
@@ -18,13 +18,9 @@ const MovieReviews = sequelize.define('reviews', {
     allowNull: false
   },
   rating: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1
-  },
-  status: {
-    type: DataTypes.STRING(255),
-    allowNull: false
   },
   userId: {
     type: DataTypes.INTEGER,
@@ -32,9 +28,13 @@ const MovieReviews = sequelize.define('reviews', {
   },
   movieId: {
     type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  status: {
+    type: DataTypes.STRING(10),
     allowNull: false,
     defaultValue: 'active'
   }
 });
 
-module.exports = { MovieReviews };
+module.exports = { Review };

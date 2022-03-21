@@ -1,17 +1,24 @@
 const { app } = require('./app');
 
-const { sequelize } = require('./api/utils/database');
+const { sequelize } = require('./utils/database');
+const { initModels } = require('./utils/initModels');
+
 
 sequelize
   .authenticate()
   .then(() => console.log('database authenticated'))
   .catch((err) => console.log(err));
 
-sequelize
+initModels();
+
+  sequelize
   .sync()
   .then(() => console.log('database synced'))
   .catch((err) => console.log(err));
 
-app.listen(4001, () => {
-  console.log('express app running');
+
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`express app running on port ${PORT}`);
 });

@@ -1,10 +1,11 @@
 //models
 const { User } = require('../models/user.model');
+const { catchAsync } = require('../utils/catchAsync');
 
 //utils
-const { filterObj } = require('../util/filterObj');
+const { filterObj } = require('../utils/filterObj');
 
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = catchAsync(async (req, res) => {
   try {
     const userDb = await User.findAll();
 
@@ -13,12 +14,20 @@ exports.getAllUsers = async (req, res) => {
         .status(404)
         .json({ status: 'error', message: 'Not found Id in the database' });
     }
-    res.status(200).json({ status: 'success', data: { users: userDb } });
+    res.status(200).json({ status: 'success', data: { userDb } });
   } catch (error) {
     console.log(error);
   }
-};
-exports.createNewUsers = async (req, res) => {
+});
+exports.getUsersById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findOne({ where: { id } });
+  if (!user) {
+    res.status(400).json({ status: 'error', message: 'User not found' });
+  }
+  res.status(200).json({ status: 'success', data: { user } });
+});
+exports.createNewUsers = catchAsync(async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
     const newUser = await User.create({
@@ -31,17 +40,11 @@ exports.createNewUsers = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-};
-exports.updateUsers = async (req, res) => {
+});
+exports.updateUsers = catchAsync(async (req, res) => {
   try {
     const { id } = req.params;
-    const data = filterObj(
-      req.body,
-      'username',
-      'email',
-      'password',
-      'role'
-   );
+    const data = filterObj(req.body, 'username', 'email', 'password', 'role');
     const user = await User.findOne({ where: { id: id } });
     if (!user) {
       res
@@ -54,8 +57,8 @@ exports.updateUsers = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-};
-exports.deleteUsers= async (req, res) => {
+});
+exports.deleteUsers = catchAsync(async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findOne({ where: { id } });
@@ -72,4 +75,4 @@ exports.deleteUsers= async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-};
+});

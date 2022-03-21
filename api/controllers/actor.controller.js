@@ -2,9 +2,9 @@
 const { Actor } = require('../models/actor.model');
 
 //utils
-const { filterObj } = require('../util/filterObj');
+const { filterObj } = require('../utils/filterObj');
 
-exports.getAllActors = async (req, res) => {
+exports.getAllActors = catchAsync(async (req, res) => {
   try {
     const actorDb = await Actor.findAll();
 
@@ -17,7 +17,7 @@ exports.getAllActors = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-};
+});
 exports.createNewActor = async (req, res) => {
   try {
     const { name, country, rating, age, profilePic } = req.body;

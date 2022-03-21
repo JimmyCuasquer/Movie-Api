@@ -1,11 +1,9 @@
 // Create server Express
 const express = require('express');
-const cors = require('cors');
-//Routers
+const {usersRouter} = require('./routes/users.routes');
 
 const app = express();
-app.use(cors());
+//app.use(express.json());
 
-app.use(express.json());
-
-
+app.use('/api/v1/users', usersRouter);
+module.exports = { app };
