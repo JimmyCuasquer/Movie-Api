@@ -1,79 +1,56 @@
 //models
-const { Movie } = require('../models/movies.model');
+const { Movie } = require('../models/movie.model');
 
 //utils
 const { filterObj } = require('../util/filterObj');
+const { catchAsync } = require('../utils/catchAsync');
 
-exports.getAllMovies = async (req, res) => {
-  try {
-    const movieDb = await Movie.findAll();
+exports.getAllMovies = catchAsync(async (req, res) => {
+  const movieDb = await Movie.findAll();
 
-    if (!movieDb) {
-      res
-        .status(404)
-        .json({ status: 'error', message: 'Not found Id in the database' });
-    }
-    res.status(200).json({ status: 'success', data: { movies: movieDb } });
-  } catch (error) {
-    console.log(error);
+  if (!movieDb) {
+    res
+      .status(404)
+      .json({ status: 'error', message: 'Not found Id in the database' });
   }
-};
-exports.createNewMovies = async (req, res) => {
-  try {
-    const { title, description, duration, rating, Image, genre } = req.body;
-    const newMovie = await Movie.create({
-      title,
-      description,
-      duration,
-      rating,
-      Image,
-      genre
-    });
-    res.status(201).json({ status: 'success', data: { newMovie } });
-  } catch (error) {
-    console.log(error);
+  res.status(200).json({ status: 'success', data: { movies: movieDb } });
+});
+exports.createNewMovies = catchAsync(async (req, res) => {
+  const { title, description, duration, rating, Image, genre } = req.body;
+  const newMovie = await Movie.create({
+    title,
+    description,
+    duration,
+    rating,
+    Image,
+    genre
+  });
+  res.status(201).json({ status: 'success', data: { newMovie } });
+});
+exports.updateMovies = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const data = filterObj(req.body, 'title', 'description', 'duration', 'genre');
+  const movie = await Movie.findOne({ where: { id: id } });
+  if (!movie) {
+    res
+      .status(404)
+      .json({ status: 'error', message: 'Cant update movie, Invalid ID' });
+    return;
   }
-};
-exports.updateMovies = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const data = filterObj(
-      req.body,
-      'title',
-      'description',
-      'duration',
-      'rating',
-      'Image',
-      'genre'
-    );
-    const movie = await Movie.findOne({ where: { id: id } });
-    if (!movie) {
-      res
-        .status(404)
-        .json({ status: 'error', message: 'Cant update movie, Invalid ID' });
-      return;
-    }
-    await Movie.update({ ...data });
-    res.status(204).json({ status: 'success' });
-  } catch (error) {
-    console.log(error);
+  await Movie.update({ ...data });
+  res.status(204).json({ status: 'success' });
+});
+exports.deleteMovies = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const movie = await Movie.findOne({ where: { id } });
+  //const todoIndex = todos.findIndex((todo) => todo.id === +id);
+  if (!movie) {
+    res
+      .status(404)
+      .json({ status: 'error', message: 'Cant delete movie Invalid ID' });
+    return;
   }
-};
-exports.deleteMovies = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const movie = await Movie.findOne({ where: { id } });
-    //const todoIndex = todos.findIndex((todo) => todo.id === +id);
-    if (!movie) {
-      res
-        .status(404)
-        .json({ status: 'error', message: 'Cant delete movie Invalid ID' });
-      return;
-    }
-    await movie.destroy();
-    //posts.splice(todoIndex, 1);
-    res.status(204).json({ status: 'success' });
-  } catch (error) {
-    console.log(error);
-  }
-};
+  await movie.destroy();
+  //posts.splice(todoIndex, 1);
+  res.status(204).json({ status: 'success' });
+});

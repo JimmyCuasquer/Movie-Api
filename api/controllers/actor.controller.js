@@ -3,75 +3,53 @@ const { Actor } = require('../models/actor.model');
 
 //utils
 const { filterObj } = require('../utils/filterObj');
+const { catchAsync } = require('../utils/catchAsync');
 
 exports.getAllActors = catchAsync(async (req, res) => {
-  try {
-    const actorDb = await Actor.findAll();
+  const actor = await Actor.findAll();
 
-    if (!actorDb) {
-      res
-        .status(404)
-        .json({ status: 'error', message: 'Not found Id in the database' });
-    }
-    res.status(200).json({ status: 'success', data: { actors: actorDb } });
-  } catch (error) {
-    console.log(error);
+  if (!actor) {
+    res
+      .status(404)
+      .json({ status: 'error', message: 'Not found Id in the database' });
   }
+  res.status(200).json({ status: 'success', data: { actors: actor } });
 });
-exports.createNewActor = async (req, res) => {
-  try {
-    const { name, country, rating, age, profilePic } = req.body;
-    const newActor = await Actor.create({
-      name,
-      country,
-      rating,
-      age,
-      profilePic
-    });
-    res.status(201).json({ status: 'success', data: { newActor } });
-  } catch (error) {
-    console.log(error);
+exports.createNewActor = catchAsync(async (req, res) => {
+  const { name, country, rating, age, profilePic } = req.body;
+  const newActor = await Actor.create({
+    name,
+    country,
+    rating,
+    age,
+    profilePic
+  });
+  res.status(201).json({ status: 'success', data: { newActor } });
+});
+exports.updateActor = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const data = filterObj(req.body, 'name', 'country', 'age');
+  const actor = await Actor.findOne({ where: { id: id } });
+  if (!actor) {
+    res
+      .status(404)
+      .json({ status: 'error', message: 'Cant update actor, Invalid ID' });
+    return;
   }
-};
-exports.updateActor = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const data = filterObj(
-      req.body,
-      'name',
-      'country',
-      'rating',
-      'age',
-      'profilePic'
-    );
-    const actor = await Actor.findOne({ where: { id: id } });
-    if (!actor) {
-      res
-        .status(404)
-        .json({ status: 'error', message: 'Cant update actor, Invalid ID' });
-      return;
-    }
-    await Actor.update({ ...data });
-    res.status(204).json({ status: 'success' });
-  } catch (error) {
-    console.log(error);
+  await Actor.update({ ...data });
+  res.status(204).json({ status: 'success' });
+});
+exports.deleteActor = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const actor = await Actor.findOne({ where: { id } });
+  //const todoIndex = todos.findIndex((todo) => todo.id === +id);
+  if (!actor) {
+    res
+      .status(404)
+      .json({ status: 'error', message: 'Cant delete actor Invalid ID' });
+    return;
   }
-};
-exports.deleteActor = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const actor = await Actor.findOne({ where: { id } });
-    //const todoIndex = todos.findIndex((todo) => todo.id === +id);
-    if (!actor) {
-      res
-        .status(404)
-        .json({ status: 'error', message: 'Cant delete actor Invalid ID' });
-      return;
-    }
-    await actor.destroy();
-    //posts.splice(todoIndex, 1);
-    res.status(204).json({ status: 'success' });
-  } catch (error) {
-    console.log(error);
-  }
-};
+  await actor.destroy();
+  //posts.splice(todoIndex, 1);
+  res.status(204).json({ status: 'success' });
+});
