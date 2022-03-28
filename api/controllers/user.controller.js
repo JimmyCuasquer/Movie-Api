@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 //models
 const { User } = require('../models/user.model');
 
-
 //utils
 const { filterObj } = require('../utils/filterObj');
 const { catchAsync } = require('../utils/catchAsync');
@@ -12,7 +11,10 @@ const { catchAsync } = require('../utils/catchAsync');
 dotenv.config({ path: './config.env' });
 
 exports.getAllUsers = catchAsync(async (req, res) => {
-  const users = await User.findAll();
+  const users = await User.findAll({
+    where: { status: 'active' },
+    attributes: { exclude: ['password'] }
+  });
 
   if (!users) {
     res
@@ -23,7 +25,8 @@ exports.getAllUsers = catchAsync(async (req, res) => {
 });
 exports.getUsersById = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const user = await User.findOne({ where: { id } });
+  const user = await User.findOne({ where: { id } ,
+    attributes: { exclude: ['password'] }});
   if (!user) {
     res.status(400).json({ status: 'error', message: 'User not found' });
   }

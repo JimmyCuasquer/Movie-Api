@@ -6,14 +6,14 @@ const { filterObj } = require('../utils/filterObj');
 const { catchAsync } = require('../utils/catchAsync');
 
 exports.getAllMovies = catchAsync(async (req, res) => {
-  const movieDb = await Movie.findAll();
+  const movie = await Movie.findAll();
 
-  if (!movieDb) {
+  if (!movie) {
     res
       .status(404)
       .json({ status: 'error', message: 'Not found Id in the database' });
   }
-  res.status(200).json({ status: 'success', data: { movies: movieDb } });
+  res.status(200).json({ status: 'success', data: { movies: movie } });
 });
 exports.getMovieById = catchAsync(async (req, res) => {
   const { id } = req.params;

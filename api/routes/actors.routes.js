@@ -9,15 +9,16 @@ const {
   createNewActor,
   getActorById
 } = require('../controllers/actor.controller');
+const {validateSession} = require('../middlewares/auth.middleware')
 
-router.get('/', getAllActors);
+router.get('/',validateSession, getAllActors);
 
-router.get('/:id', getActorById);
+router.get('/:id',validateSession, getActorById);
 
 router.post('/', createNewActor);
 
-router.patch('/:id', updateActor);
+router.patch('/:id',validateSession, updateActor);
 
-router.delete('/:id', deleteActor);
+router.delete('/:id',validateSession, deleteActor);
 
 module.exports = { actorsRouter: router };

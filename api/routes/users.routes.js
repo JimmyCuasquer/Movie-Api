@@ -22,9 +22,10 @@ router.get('/:id',validateSession, getUsersById);
 
 router.post('/', createNewUsers);
 
-router.patch('/:id', updateUsers);
+router.patch('/:id',validateSession, updateUsers);
 
-router.delete('/:id', deleteUsers);
+router.delete('/:id', validateSession,deleteUsers);
+
 router.post('/login', loginUser)
 
 module.exports = { usersRouter: router };

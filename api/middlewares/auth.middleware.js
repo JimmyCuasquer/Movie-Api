@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { promisify } = require('util');
+
+const {User} = require('../models/user.model')
 const { catchAsync } = require('../utils/catchAsync');
 dotenv.config({ path: './config.env' });
 exports.validateSession = catchAsync( async (req, res, next) => {
@@ -13,12 +15,17 @@ exports.validateSession = catchAsync( async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
   if (!token) {
-    res.status(400).json({ status: 'error', message: 'Invalid session token' });
-  }
-
-  const validToken = promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  if (!validToken) {
     res.status(401).json({ status: 'error', message: 'Invalid session token' });
   }
+
+  const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  
+  const user = await User.findOne({ where: { id: decodedToken.id, status: 'active'},
+  attributes: {exclude: ['password']}
+})
+  if (!user) {
+    res.status(401).json({ status: 'error', message: 'This user is not longer available'})
+  }
+
   next();
 });
