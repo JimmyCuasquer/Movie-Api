@@ -15,8 +15,16 @@ exports.getAllActors = catchAsync(async (req, res) => {
   }
   res.status(200).json({ status: 'success', data: { actors: actor } });
 });
+exports.getActorById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const actor = await Actor.findOne({ where: { id } });
+  if (!actor) {
+    res.status(400).json({ status: 'error', message: 'Actor  not found' });
+  }
+  res.status(200).json({ status: 'success', data: { actor } });
+});
 exports.createNewActor = catchAsync(async (req, res) => {
-  const { name, country, rating, age, profilePic } = req.body;
+  const { name, country, rating, age, profilePic } = req;
   const newActor = await Actor.create({
     name,
     country,

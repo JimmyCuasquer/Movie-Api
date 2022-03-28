@@ -2,7 +2,7 @@
 const { Movie } = require('../models/movie.model');
 
 //utils
-const { filterObj } = require('../util/filterObj');
+const { filterObj } = require('../utils/filterObj');
 const { catchAsync } = require('../utils/catchAsync');
 
 exports.getAllMovies = catchAsync(async (req, res) => {
@@ -15,8 +15,17 @@ exports.getAllMovies = catchAsync(async (req, res) => {
   }
   res.status(200).json({ status: 'success', data: { movies: movieDb } });
 });
+exports.getMovieById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const movie = await Movie.findOne({ where: { id } });
+  if (!movie) {
+    res.status(400).json({ status: 'error', message: 'Movie  not found' });
+  }
+  res.status(200).json({ status: 'success', data: { movie } });
+});
 exports.createNewMovies = catchAsync(async (req, res) => {
   const { title, description, duration, rating, Image, genre } = req.body;
+
   const newMovie = await Movie.create({
     title,
     description,
