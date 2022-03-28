@@ -25,8 +25,10 @@ exports.getAllUsers = catchAsync(async (req, res) => {
 });
 exports.getUsersById = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const user = await User.findOne({ where: { id } ,
-    attributes: { exclude: ['password'] }});
+  const user = await User.findOne({
+    where: { id },
+    attributes: { exclude: ['password'] }
+  });
   if (!user) {
     res.status(400).json({ status: 'error', message: 'User not found' });
   }
