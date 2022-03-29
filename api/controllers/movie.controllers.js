@@ -1,6 +1,7 @@
 //models
 const { Movie } = require('../models/movie.model');
-const {Actor} = require('../models/actor.model')
+const { Actor } = require('../models/actor.model');
+const { ActorInMovie } = require('../models/ActorInMovie');
 //utils
 const { filterObj } = require('../utils/filterObj');
 const { catchAsync } = require('../utils/catchAsync');
@@ -27,7 +28,8 @@ exports.getMovieById = catchAsync(async (req, res) => {
   res.status(200).json({ status: 'success', data: { movie } });
 });
 exports.createNewMovies = catchAsync(async (req, res) => {
-  const { title, description, duration, rating, Image, genre } = req.body;
+  const { title, description, duration, rating, Image, genre, actors } =
+    req.body;
 
   const newMovie = await Movie.create({
     title,
@@ -37,6 +39,11 @@ exports.createNewMovies = catchAsync(async (req, res) => {
     Image,
     genre
   });
+  const actorsInMoviesPromises = actors.map(async (actorId) => {
+    return await ActorInMovie.create({ actorId, movieId: newMovie.id });
+  });
+
+  await Promise.all(actorsInMoviesPromises);
   res.status(201).json({ status: 'success', data: { newMovie } });
 });
 exports.updateMovies = catchAsync(async (req, res) => {

@@ -9,7 +9,20 @@ const { filterObj } = require('../utils/filterObj');
 const { catchAsync } = require('../utils/catchAsync');
 
 dotenv.config({ path: './config.env' });
+exports.loginUser = catchAsync(async (req, res) => {
+  const { email, password } = req.body;
 
+  const user = await User.findOne({ where: { email, status: 'active' } });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    res.status(400).json({ status: 'error', message: 'credentials invalid' });
+  }
+
+  const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRED
+  });
+
+  res.status(200).json({ status: 'success', data: { token } });
+});
 exports.getAllUsers = catchAsync(async (req, res) => {
   const users = await User.findAll({
     where: { status: 'active' },
@@ -74,18 +87,4 @@ exports.deleteUsers = catchAsync(async (req, res) => {
   await user.destroy();
   //posts.splice(todoIndex, 1);
   res.status(204).json({ status: 'success' });
-});
-exports.loginUser = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ where: { email, status: 'active' } });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    res.status(400).json({ status: 'error', message: 'credentials invalid' });
-  }
-
-  const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRED
-  });
-
-  res.status(200).json({ status: 'success', data: { token } });
 });
