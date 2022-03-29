@@ -13,16 +13,20 @@ const {
 
 const { validateSession } = require('../middlewares/auth.middleware');
 
+
+router.post('/', createNewUsers);
+
+router.post('/login', loginUser);
+
 router.get('/', validateSession, getAllUsers);
 
 router.get('/:id', validateSession, getUsersById);
 
-router.post('/', createNewUsers);
 
 router.patch('/:id', validateSession, updateUsers);
 
 router.delete('/:id', validateSession, deleteUsers);
 
-router.post('/login', loginUser);
+
 
 module.exports = { usersRouter: router };
