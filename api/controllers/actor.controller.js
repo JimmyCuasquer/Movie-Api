@@ -1,13 +1,15 @@
 //models
 const { Actor } = require('../models/actor.model');
-
+const { Movie } = require('../models/movie.model');
 //utils
 const { filterObj } = require('../utils/filterObj');
 const { catchAsync } = require('../utils/catchAsync');
 
 exports.getAllActors = catchAsync(async (req, res) => {
-  const actor = await Actor.findAll();
-
+  const actor = await Actor.findAll({
+    where: { status: 'active' },
+    include: [{ model: Movie, through: ActorInMovie }]
+  });
   if (!actor) {
     res
       .status(404)
