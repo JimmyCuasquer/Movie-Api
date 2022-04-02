@@ -1,21 +1,30 @@
-const {User} = require('../models/user.model')
-const {Actor} = require('../models/actor.model')
-const {Movie} = require('../models/movie.model')
-const {Review} = require('../models/review.model')
-const {ActorInMovie} = require('../models/ActorInMovie')
+// Models
+const { User } = require('../models/user.model');
+const { Product } = require('../models/product.model');
+const { Cart } = require('../models/cart.model');
+const { ProductInCart } = require('../models/productInCart.model');
+const { Order } = require('../models/order.model');
 
 const initModels = () => {
+  // 1 User <--> M Product
+  User.hasMany(Product);
+  Product.belongsTo(User);
 
-User.hasMany(Review)
-Review.belongsTo(User)
+  // 1 User <--> M Order
+  User.hasMany(Order);
+  Order.belongsTo(User);
 
-Movie.hasMany(Review)
-Review.belongsTo(Movie)
+  // 1 User <--> 1 Cart
+  User.hasOne(Cart);
+  Cart.belongsTo(User);
 
+  // M Cart <--> M Product
+  Cart.belongsToMany(Product, { through: ProductInCart });
+  Product.belongsToMany(Cart, { through: ProductInCart });
 
-Movie.belongsToMany(Actor, {through: ActorInMovie});
-Actor.belongsToMany(Movie, {through: ActorInMovie});
+  // 1 Order <--> 1 Cart
+  Cart.hasOne(Order);
+  Order.belongsTo(Cart);
+};
 
-
-}
-module.exports = {initModels}
+module.exports = { initModels };

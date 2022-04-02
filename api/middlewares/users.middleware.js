@@ -2,8 +2,8 @@
 const { User } = require('../models/user.model');
 
 // Utils
-const { catchAsync } = require('../util/catchAsync');
-const { AppError } = require('../util/appError');
+const { catchAsync } = require('../utils/catchAsync');
+const { AppError } = require('../utils/appError');
 
 exports.userExists = catchAsync(async (req, res, next) => {
   const { id } = req.params;

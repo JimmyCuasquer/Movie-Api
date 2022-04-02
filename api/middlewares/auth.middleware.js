@@ -5,8 +5,8 @@ const { promisify } = require('util');
 const { User } = require('../models/user.model');
 
 // Utils
-const { AppError } = require('../util/appError');
-const { catchAsync } = require('../util/catchAsync');
+const { AppError } = require('../utils/appError');
+const { catchAsync } = require('../utils/catchAsync');
 
 exports.validateSession = catchAsync(async (req, res, next) => {
   let token;
