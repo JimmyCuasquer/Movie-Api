@@ -1,10 +1,13 @@
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
 const { promisify } = require('util');
 
+// Models
 const { User } = require('../models/user.model');
-const { catchAsync } = require('../utils/catchAsync');
-dotenv.config({ path: './config.env' });
+
+// Utils
+const { AppError } = require('../util/appError');
+const { catchAsync } = require('../util/catchAsync');
+
 exports.validateSession = catchAsync(async (req, res, next) => {
   let token;
 
@@ -14,8 +17,9 @@ exports.validateSession = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
+
   if (!token) {
-    res.status(401).json({ status: 'error', message: 'Invalid session token' });
+    return next(new AppError(401, 'Invalid session'));
   }
 
   const decodedToken = await promisify(jwt.verify)(
@@ -24,14 +28,14 @@ exports.validateSession = catchAsync(async (req, res, next) => {
   );
 
   const user = await User.findOne({
-    where: { id: decodedToken.id, status: 'active' },
-    attributes: { exclude: ['password'] }
+    attributes: { exclude: ['password'] },
+    where: { id: decodedToken.id, status: 'active' }
   });
+
   if (!user) {
-    res
-      .status(401)
-      .json({ status: 'error', message: 'This user is not longer available' });
+    return next(new AppError(401, 'Invalid session'));
   }
 
+  req.currentUser = user;
   next();
 });

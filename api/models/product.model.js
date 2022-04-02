@@ -1,32 +1,30 @@
 const { DataTypes } = require('sequelize');
+const { sequelize } = require('../util/database');
 
-const { sequelize } = require('../utils/database');
-
-const Review = sequelize.define('review', {
+const Product = sequelize.define('product', {
   id: {
     primaryKey: true,
     autoIncrement: true,
-    type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    type: DataTypes.INTEGER
   },
   title: {
     type: DataTypes.STRING(100),
     allowNull: false
   },
-  comment: {
-    type: DataTypes.STRING(255),
+  description: {
+    type: DataTypes.TEXT,
     allowNull: false
   },
-  rating: {
+  quantity: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 1
+    allowNull: false
+  },
+  price: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  movieId: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
@@ -37,4 +35,4 @@ const Review = sequelize.define('review', {
   }
 });
 
-module.exports = { Review };
+module.exports = { Product };
